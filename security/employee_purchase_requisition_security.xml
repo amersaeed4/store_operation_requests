@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--Record rules-->
+    <record id="requisition_user_rule" model="ir.rule">
+        <field name="name">Requisition User Rule</field>
+        <field name="model_id" ref="model_employee_purchase_requisition"/>
+        <field name="domain_force">[('confirm_id', '=', user.id)]</field>
+        <field name="groups"
+               eval="[(4, ref('store_operation_requests.employee_requisition_user'))]"/>
+    </record>
+
+    <record id="department_head_rule" model="ir.rule">
+        <field name="name">Department Head Rule</field>
+        <field ref="model_employee_purchase_requisition" name="model_id"/>
+        <field name="domain_force">[('user_id','=',user.id)]</field>
+        <field name="groups"
+               eval="[(4, ref('store_operation_requests.employee_requisition_head'))]"/>
+    </record>
+
+    <record id="requisition_manager_rule" model="ir.rule">
+        <field name="name">Requisition Manager Rule</field>
+        <field ref="model_employee_purchase_requisition" name="model_id"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="groups"
+               eval="[(4, ref('store_operation_requests.employee_requisition_manager'))]"/>
+    </record>
+
+    <record id="requisition_company_rule" model="ir.rule">
+        <field name="name">Issue Request Company Rule</field>
+        <field ref="model_employee_purchase_requisition" name="model_id"/>
+        <field name="domain_force">[('company_id', '=', company_id)]</field>
+    </record>
+
+    <!--Record rules for return requests-->
+    <record id="return_request_user_rule" model="ir.rule">
+        <field name="name">Return Request User Rule</field>
+        <field name="model_id" ref="model_employee_return_request"/>
+        <field name="domain_force">[('confirm_id', '=', user.id)]</field>
+        <field name="groups"
+               eval="[(4, ref('store_operation_requests.employee_requisition_user'))]"/>
+    </record>
+
+    <record id="return_request_department_head_rule" model="ir.rule">
+        <field name="name">Return Request Department Head Rule</field>
+        <field ref="model_employee_return_request" name="model_id"/>
+        <field name="domain_force">[('user_id','=',user.id)]</field>
+        <field name="groups"
+               eval="[(4, ref('store_operation_requests.employee_requisition_head'))]"/>
+    </record>
+
+    <record id="return_request_manager_rule" model="ir.rule">
+        <field name="name">Return Request Manager Rule</field>
+        <field ref="model_employee_return_request" name="model_id"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="groups"
+               eval="[(4, ref('store_operation_requests.employee_requisition_manager'))]"/>
+    </record>
+
+    <record id="return_request_company_rule" model="ir.rule">
+        <field name="name">Return Request Company Rule</field>
+        <field ref="model_employee_return_request" name="model_id"/>
+        <field name="domain_force">[('company_id', '=', company_id)]</field>
+    </record>
+</odoo>

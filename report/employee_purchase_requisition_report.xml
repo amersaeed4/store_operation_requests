@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--Action to print report-->
+    <record id="action_print_requisition_order_pdf" model="ir.actions.server">
+        <field name="name">Print Requisition Order</field>
+        <field name="model_id" ref="store_operation_requests.model_employee_purchase_requisition"/>
+        <field name="binding_model_id" ref="store_operation_requests.model_employee_purchase_requisition"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_report()</field>
+    </record>
+    <!--store operation request report-->
+    <record id="action_report_purchase_requisition" model="ir.actions.report">
+        <field name="name">Issue Request Report</field>
+        <field name="model">employee.purchase.requisition</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">store_operation_requests.report_purchase_requisition</field>
+        <field name="report_file">store_operation_requests.report_purchase_requisition</field>
+        <field name="print_report_name">'Issue Request Report-%s' % (object.name)</field>
+    </record>
+</odoo>

@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Issue Requests view -->
+    <record id="employee_purchase_requisition_action"
+            model="ir.actions.act_window">
+        <field name="name">Issue Requests</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">employee.purchase.requisition</field>
+        <field name="view_mode">list,form,kanban,pivot,graph</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new record!
+            </p>
+        </field>
+    </record>
+
+    <record id="employee_purchase_requisition_view_form" model="ir.ui.view">
+        <field name="name">employee.purchase.requisition.view.form</field>
+        <field name="model">employee.purchase.requisition</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget='statusbar'
+                           statusbar_visible='new,waiting_department_approval,waiting_head_approval,approved,purchase_order_created,received'/>
+                    <button name="action_confirm_requisition"
+                            class="oe_highlight"
+                            invisible="state != 'new'" string="Confirm"
+                            type="object"
+                            help="Submit to Department Approval"
+                            groups="store_operation_requests.employee_requisition_user"/>
+                    <button name="action_department_approval"
+                            class="oe_highlight"
+                            invisible="state != 'waiting_department_approval'"
+                            string="Approve" type="object"
+                            help="Approve purchase requisition,Submit for Approval for Requisition Head"
+                            groups="store_operation_requests.employee_requisition_head"/>
+                    <button name="action_department_cancel"
+                            class="oe_highlight"
+                            invisible="state != 'waiting_department_approval'"
+                            string="Reject" type="object"
+                            help="Reject Purchase Requisition"
+                            groups="store_operation_requests.employee_requisition_head"/>
+                    <button name="action_head_approval" class="oe_highlight"
+                            invisible="state != 'waiting_head_approval'"
+                            string="Approve"
+                            type="object"
+                            help="Approve Purchase requisition"
+                            groups="store_operation_requests.employee_requisition_manager"/>
+                    <button name="action_head_cancel" class="oe_highlight"
+                            invisible="state != 'waiting_head_approval'"
+                            string="Reject"
+                            type="object"
+                            help="Reject Purchase Requisition"
+                            groups="store_operation_requests.employee_requisition_manager"/>
+                    <button name="action_create_purchase_order"
+                            class="oe_highlight"
+                            invisible="state != 'approved'"
+                            string="Create Picking and PO"
+                            type="object"
+                            help="Create Picking/Purchase order"
+                            groups="purchase.group_purchase_user"/>
+                    <button name="action_receive" class="oe_highlight"
+                            invisible="state != 'purchase_order_created'"
+                            string="Received"
+                            type="object"
+                            groups="store_operation_requests.employee_requisition_manager"/>
+                    <button name="action_print_report" type="object"
+                            string="Print" invisible="not id"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="get_purchase_order"
+                                icon="fa-book"
+                                invisible="purchase_count == 0"
+                                groups="purchase.group_purchase_user">
+                            <field string="Purchase Order"
+                                   name="purchase_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="get_internal_transfer"
+                                icon="fa-truck"
+                                invisible="not internal_transfer_count"
+                                groups="stock.group_stock_user">
+                            <field string="Internal Transfer"
+                                   name="internal_transfer_count"
+                                   widget="statinfo"
+                            />
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="get_receipt"
+                                icon="fa-truck"
+                                invisible="not receipt_count"
+                                groups="stock.group_stock_user">
+                            <field string="Receipt"
+                                   name="receipt_count"
+                                   widget="statinfo"
+                            />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="New"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="state not in ['new']"/>
+                            <field name="dept_id"/>
+                            <field name="user_id" readonly="state not in ['new']"/>
+                        </group>
+                        <group>
+                            <field name="requisition_date" readonly="state not in ['new']"/>
+                            <field name="receive_date"/>
+                            <field name="requisition_deadline" readonly="state not in ['new']"/>
+                            <field name="company_id" readonly="state not in ['new']"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Requisition Orders ">
+                            <field name="requisition_order_ids"
+                                   readonly="1 if state not in ['new','waiting_department_approval','waiting_head_approval'] else 0"/>
+                        </page>
+                        <page string="Picking Details"
+                              groups="store_operation_requests.employee_requisition_manager,store_operation_requests.employee_requisition_head">
+                            <group>
+                                <group>
+                                    <field name="source_location_id"/>
+                                    <field name="delivery_type_id"/>
+                                </group>
+                                <group>
+                                    <field name="destination_location_id"/>
+                                    <field name="internal_picking_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Other Info">
+                            <group>
+                                <group>
+                                    <field name="confirm_id"/>
+                                    <field name="manager_id"/>
+                                    <field name="requisition_head_id"/>
+                                    <field name="rejected_user_id"/>
+                                </group>
+                                <group>
+                                    <field name="confirmed_date"/>
+                                    <field name="department_approval_date"/>
+                                    <field name="approval_date"/>
+                                    <field name="reject_date"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                    <group>
+                        <field name="requisition_description"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="employee_purchase_requisition_view_list" model="ir.ui.view">
+        <field name="name">employee.purchase.requisition.view.list</field>
+        <field name="model">employee.purchase.requisition</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" optional="show"/>
+                <field name="employee_id" optional="show"/>
+                <field name="dept_id" optional="show"/>
+                <field name="user_id" optional="show"/>
+                <field name="requisition_date" optional="show"/>
+                <field name="receive_date" optional="show"/>
+                <field name="requisition_deadline" optional="show"
+                       decoration-danger="requisition_deadline and requisition_deadline &lt; current_date and state != 'received'"/>
+                <field name="requisition_description" optional="show"/>
+                <field name="destination_location_id" optional="show"/>
+                <field name="confirm_id" optional="show"/>
+                <field name="confirmed_date" optional="show"/>
+                <field name="manager_id" optional="show"/>
+                <field name="department_approval_date" optional="show"/>
+                <field name="requisition_head_id" optional="show"/>
+                <field name="approval_date" optional="show"/>
+                <field name="rejected_user_id" optional="show"/>
+                <field name="reject_date" optional="show"/>
+                <field name="state" widget="badge" optional="show"
+                       decoration-success="state in ('approved','received')"
+                       decoration-warning="state in ('waiting_department_approval','waiting_head_approval')"
+                       decoration-info="state =='purchase_order_created'"
+                       decoration-danger="state =='cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="employee_purchase_requisition_view_search" model="ir.ui.view">
+        <field name="name">employee.purchase.requisition.view.search</field>
+        <field name="model">employee.purchase.requisition</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="dept_id"/>
+                <field name="user_id"/>
+                <field name="requisition_date"/>
+                <filter name="filter_last_30_days" string="Last 30 Days"
+                        domain="[('requisition_date', '>=', (context_today() - relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_last_60_days" string="Last 60 Days"
+                        domain="[('requisition_date', '>=', (context_today() - relativedelta(days=60)).strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_last_90_days" string="Last 90 Days"
+                        domain="[('requisition_date', '>=', (context_today() - relativedelta(days=90)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="filter_new" string="New"
+                        domain="[('state', '=', 'new')]"/>
+                <filter name="filter_waiting_department_approval" string="Waiting for Department Head"
+                        domain="[('state', '=', 'waiting_department_approval')]"/>
+                <filter name="filter_waiting_head_approval" string="Waiting Head Approval"
+                        domain="[('state', '=', 'waiting_head_approval')]"/>
+                <filter name="filter_approved" string="Approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="filter_purchase_order_created" string="Orders Created"
+                        domain="[('state', '=', 'purchase_order_created')]"/>
+                <filter name="filter_received" string="Received"
+                        domain="[('state', '=', 'received')]"/>
+                <filter name="filter_cancelled" string="Cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter name="filter_deadline_over" string="Deadline Over"
+                        domain="[('requisition_deadline', '!=', False),
+                                 ('requisition_deadline', '&lt;', context_today().strftime('%Y-%m-%d')),
+                                 ('state', 'not in', ['received', 'cancelled'])]"/>
+                <group>
+                    <filter name="group_by_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_by_department" string="Department" context="{'group_by': 'dept_id'}"/>
+                    <filter name="group_by_responsible" string="Responsible" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_by_state" string="State" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="employee_purchase_requisition_view_pivot" model="ir.ui.view">
+        <field name="name">employee.purchase.requisition.view.pivot</field>
+        <field name="model">employee.purchase.requisition</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="dept_id" type="row"/>
+                <field name="state" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="employee_purchase_requisition_view_graph" model="ir.ui.view">
+        <field name="name">employee.purchase.requisition.view.graph</field>
+        <field name="model">employee.purchase.requisition</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="state"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="employee_purchase_requisition_view_kanban" model="ir.ui.view">
+        <field name="name">employee.purchase.requisition.view.kanban</field>
+        <field name="model">employee.purchase.requisition</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="oe_kanban_card">
+                                    <div>
+                                        <b>
+                                            <field name="name"/>
+                                        </b>
+                                    </div>
+                                    <div>
+                                        <b>
+                                            <field name="employee_id"/>
+                                        </b>
+                                    </div>
+                                    <div>
+                                        <b>
+                                            <field name="dept_id"/>
+                                        </b>
+                                    </div>
+                                    <div>
+                                        <b>
+                                            <field name="user_id"/>
+                                        </b>
+                                    </div>
+                                    <div>
+                                        <b>
+                                            <field name="requisition_date"/>
+                                        </b>
+                                    </div>
+                                    <div>
+                                        <b>
+                                            <field name="state" widget="badge"
+                                                   decoration-success="state in
+                                            ('approved','received')"
+                                                   decoration-warning="state in
+                                            ('waiting_department_approval','waiting_head_approval')"
+                                                   decoration-info="state
+                                            =='purchase_order_created'"
+                                                   decoration-danger="state
+                                            =='cancelled'"
+                                            />
+                                        </b>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+</odoo>

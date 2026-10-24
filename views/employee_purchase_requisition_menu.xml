@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Store Operation Requests menu -->
+    <!-- Explicit groups on every menu item: the root's action is now the
+         Dashboard (an ir.actions.client), which has no model for Odoo's
+         usual access-based menu hiding to check against. Without this,
+         the app tile shows for every user regardless of their actual
+         Store Operation Requests access level. -->
+    <menuitem id="employee_purchase_requisition_menu_root"
+              name="Store Operation Requests"
+              web_icon="store_operation_requests,static/description/icon.png"
+              action="store_operation_dashboard_action"
+              groups="store_operation_requests.employee_requisition_user"/>
+    <menuitem id="store_operation_dashboard_menu"
+              name="Dashboard"
+              parent="employee_purchase_requisition_menu_root"
+              action="store_operation_dashboard_action"
+              sequence="1"
+              groups="store_operation_requests.employee_requisition_user"/>
+    <menuitem id="employee_purchase_requisition_menu_create_purchase_requisition"
+              name="Issue Requests"
+              parent="employee_purchase_requisition_menu_root"
+              action="employee_purchase_requisition_action"
+              sequence="10"
+              groups="store_operation_requests.employee_requisition_user"/>
+    <menuitem id="employee_return_request_menu"
+              name="Return Requests"
+              parent="employee_purchase_requisition_menu_root"
+              action="employee_return_request_action"
+              sequence="20"
+              groups="store_operation_requests.employee_requisition_user"/>
+</odoo>

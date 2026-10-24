@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="store_operation_requests.Dashboard">
+        <ControlPanel>
+            <t t-set-slot="layout-actions"/>
+        </ControlPanel>
+        <div class="o_sor_dashboard overflow-auto h-100">
+
+            <div class="o_sor_header d-flex flex-wrap align-items-center gap-2">
+                <Dropdown menuClass="'o_sor_date_menu'">
+                    <button class="btn o_sor_date_toggle">
+                        <i class="fa fa-calendar me-2"/>
+                        <t t-out="currentLabel"/>
+                        <i class="fa fa-caret-down ms-2"/>
+                    </button>
+                    <t t-set-slot="content">
+                        <t t-foreach="presets" t-as="preset" t-key="preset.id">
+                            <DropdownItem
+                                class="{ selected: isSelected(preset.id) }"
+                                onSelected="() => this.selectPreset(preset.id)"
+                            >
+                                <t t-out="preset.label"/>
+                            </DropdownItem>
+                        </t>
+                        <div class="dropdown-divider"/>
+                        <DropdownItem
+                            tag="'div'"
+                            class="{ selected: isSelected('custom') }"
+                            onSelected="() => this.selectCustom()"
+                            closingMode="'none'"
+                        >
+                            <div>Custom Range</div>
+                            <div class="d-flex align-items-center gap-2 mt-2" t-if="state.filters.range === 'custom'">
+                                <input type="date" class="o_sor_date_input" t-att-value="state.filters.dateFrom"
+                                       t-on-change="(ev) => this.onCustomDateChange('dateFrom', ev)"/>
+                                <span>to</span>
+                                <input type="date" class="o_sor_date_input" t-att-value="state.filters.dateTo"
+                                       t-on-change="(ev) => this.onCustomDateChange('dateTo', ev)"/>
+                            </div>
+                        </DropdownItem>
+                    </t>
+                </Dropdown>
+
+                <select class="form-select o_sor_filter_select" t-on-change="onEmployeeChange">
+                    <option value="">All Employees</option>
+                    <t t-foreach="state.employees" t-as="emp" t-key="emp.id">
+                        <option t-att-value="emp.id" t-esc="emp.name"/>
+                    </t>
+                </select>
+
+                <select class="form-select o_sor_filter_select" t-on-change="onDeptChange">
+                    <option value="">All Departments</option>
+                    <t t-foreach="state.departments" t-as="dept" t-key="dept.id">
+                        <option t-att-value="dept.id" t-esc="dept.name"/>
+                    </t>
+                </select>
+
+                <select class="form-select o_sor_filter_select" t-on-change="onUserChange">
+                    <option value="">All Responsible</option>
+                    <t t-foreach="state.users" t-as="u" t-key="u.id">
+                        <option t-att-value="u.id" t-esc="u.name"/>
+                    </t>
+                </select>
+            </div>
+
+            <div class="o_sor_title" role="heading" aria-level="2">Issue Requests</div>
+            <div class="o_sor_kpi_grid">
+                <t t-foreach="issueTiles" t-as="tile" t-key="tile.key">
+                    <div t-attf-class="o_sor_kpi_card o_sor_kpi_{{tile.color}}"
+                         t-on-click="() => tile.onClick()">
+                        <div class="o_sor_kpi_icon">
+                            <i t-attf-class="fa {{tile.icon}}" role="img" aria-label="{{tile.label}}"/>
+                        </div>
+                        <div class="o_sor_kpi_body">
+                            <div class="o_sor_kpi_value" t-esc="tile.count"/>
+                            <div class="o_sor_kpi_label" t-esc="tile.label"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <div class="o_sor_charts_row mt-4">
+                <DashboardBarChart
+                    title="issueChart.title"
+                    labels="issueChart.labels"
+                    values="issueChart.values"
+                    colors="issueChart.colors"
+                    onBarClick="(index) => this.onChartBarClick(issueChart, index)"
+                />
+            </div>
+
+            <div class="o_sor_title mt-4" role="heading" aria-level="2">Return Requests</div>
+            <div class="o_sor_kpi_grid">
+                <t t-foreach="returnTiles" t-as="tile" t-key="tile.key">
+                    <div t-attf-class="o_sor_kpi_card o_sor_kpi_{{tile.color}}"
+                         t-on-click="() => tile.onClick()">
+                        <div class="o_sor_kpi_icon">
+                            <i t-attf-class="fa {{tile.icon}}" role="img" aria-label="{{tile.label}}"/>
+                        </div>
+                        <div class="o_sor_kpi_body">
+                            <div class="o_sor_kpi_value" t-esc="tile.count"/>
+                            <div class="o_sor_kpi_label" t-esc="tile.label"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <div class="o_sor_charts_row mt-4">
+                <DashboardBarChart
+                    title="returnChart.title"
+                    labels="returnChart.labels"
+                    values="returnChart.values"
+                    colors="returnChart.colors"
+                    onBarClick="(index) => this.onChartBarClick(returnChart, index)"
+                />
+            </div>
+        </div>
+    </t>
+
+    <t t-name="store_operation_requests.DashboardBarChart">
+        <div class="o_sor_chart_panel">
+            <div class="o_sor_chart_title" t-out="props.title"/>
+            <div class="o_sor_chart_canvas_wrap">
+                <canvas t-ref="canvas"/>
+            </div>
+        </div>
+    </t>
+
+</templates>

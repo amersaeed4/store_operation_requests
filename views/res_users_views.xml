@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Adding a digital signature field to the user's own profile page -->
+    <record id="view_users_form_simple_modif_signature" model="ir.ui.view">
+        <field name="name">res.users.preferences.form.inherit.employee.purchase.requisition</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+            <group name="other_preferences" position="inside">
+                <field name="signature_image" widget="image"
+                       options="{'size': [0, 100]}"/>
+            </group>
+        </field>
+    </record>
+
+    <!-- Adding a digital signature field to the Administrator's full user form,
+         so an admin can view/set the signature for any user, not just their own -->
+    <record id="view_users_form_signature" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.employee.purchase.requisition</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <group name="other_preferences" position="inside">
+                <field name="signature_image" widget="image"
+                       options="{'size': [0, 100]}"/>
+            </group>
+        </field>
+    </record>
+</odoo>

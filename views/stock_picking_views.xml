@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Adding field in the stock picking form view -->
+    <record id="view_picking_form" model="ir.ui.view">
+        <field name="name">stock.picking.view.form.inherit.employee.purchase.requisition</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id"
+               ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location_dest_id']"
+                   position="after">
+                <label for="requisition_order"/>
+                <div class="o_row">
+                    <field name="requisition_order"/>
+                    <button name="action_open_requisition_order" type="object"
+                            icon="fa-external-link" class="btn-link"
+                            invisible="not requisition_order"
+                            title="Open the originating Store Operation Request"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

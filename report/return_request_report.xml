@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--Action to print report-->
+    <record id="action_print_return_request_pdf" model="ir.actions.server">
+        <field name="name">Print Return Request</field>
+        <field name="model_id" ref="store_operation_requests.model_employee_return_request"/>
+        <field name="binding_model_id" ref="store_operation_requests.model_employee_return_request"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_report()</field>
+    </record>
+    <!--return request report-->
+    <record id="action_report_return_request" model="ir.actions.report">
+        <field name="name">Return Request Report</field>
+        <field name="model">employee.return.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">store_operation_requests.report_return_request</field>
+        <field name="report_file">store_operation_requests.report_return_request</field>
+        <field name="print_report_name">'Return Request Report-%s' % (object.name)</field>
+    </record>
+</odoo>
